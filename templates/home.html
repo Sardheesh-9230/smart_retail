@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Management</title>
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: url('/static/images/smart retail predictor web page image (1).png') no-repeat center center fixed;
+            background-size: cover; /* Ensures the image covers the whole page */
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        /* Optional: Overlay to ensure text is visible on top of the image */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5); /* Dark overlay */
+            z-index: -1; /* Sends the overlay behind the content */
+        }
+
+        /* Header */
+        header {
+            background-color: rgba(222, 209, 209, 0.633); /* Semi-transparent background */
+            padding: 15px 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+            animation: fadeIn 1s ease-out;
+        }
+
+        header h3 {
+            font-size: 1.2rem;
+            color: #555;
+        }
+
+        /* Navigation Links */
+        nav {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #fff;
+            background-color: #5c67f2;
+            padding: 10px 20px;
+            margin: 0 10px;
+            border-radius: 25px;
+            transition: transform 0.3s, background-color 0.3s;
+        }
+
+        nav a:hover {
+            background-color: #4e59d9;
+            transform: scale(1.1);
+        }
+
+        /* Cards */
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin: 15px;
+            padding: 20px;
+            width: 300px;
+            text-align: center;
+            transform: translateY(50px);
+            animation: slideUp 0.8s ease-in-out forwards;
+        }
+
+        .card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .card p {
+            font-size: 1rem;
+            color: #555;
+        }
+
+        .card button {
+            background: #5c67f2;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .card button:hover {
+            background: lightgreen;
+            transform: translateY(-3px);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #555;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Motion Gesture: Slide In */
+        @keyframes slideUp {
+            0% { transform: translateY(50px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Fade In Animation */
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>SMART RETAIL PREDICTOR</h1>
+        <h3>Inventory Management</h3>
+    </header>
+
+    <nav>
+        <a href="/add_product">Add Product</a>
+        <a href="/update_stock">Update Stock</a>
+        <a href="/display_inventory">View Inventory</a>
+        <a href="/billing">Billing</a>
+        <a href="/view_sales">View Sales</a>
+        <a href="{{ url_for('download_qr_pdf') }}" target="_blank">Download Barcode as PDF</a>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <h2>Analyze Inventory</h2>
+            <p>View insights about inventory trends and categories.</p>
+            <button onclick="window.location.href='/analyze_inventory'">Analyze</button>
+        </div>
+
+        <div class="card">
+            <h2>Remove Product</h2>
+            <p>Delete products from the inventory.</p>
+            <button onclick="window.location.href='/remove_product'">Remove</button>
+        </div>
+
+        <div class="card">
+            <h2>Predicted Sales</h2>
+            <p>Predict the sales over the category by month.</p>
+            <button onclick="window.location.href='/predict_sales'">Predict Sales</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Smart Retail Inventory Management System</p>
+    </footer>
+</body>
+</html>

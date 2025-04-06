@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Product</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> <!-- Font Awesome for icons -->
+    <style>
+        /* Base Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url('/static/images/ADD the product from inventory background image.png') no-repeat center center fixed; /* Add the background image */
+            background-size: cover; /* Ensure the image covers the entire screen */
+            color: #333; /* Ensure text remains visible */
+        }
+
+        /* Optional: Dark overlay for better contrast */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8); /* Light overlay for better readability */
+            z-index: -1;
+        }
+
+        /* Navigation Styles */
+        nav {
+            background-color: #4CAF50;
+            padding: 10px 20px;
+            text-align: center;
+        }
+
+        nav button {
+            background-color: transparent;
+            color: white;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 10px 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        nav button:hover {
+            background-color: #45a049;
+        }
+
+        /* Container Styles */
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        /* Form Styles */
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        label {
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="submit"] {
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            outline: none;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            border-color: #4CAF50;
+        }
+
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        /* Messages Styles */
+        .error-message,
+        .success-message {
+            text-align: center;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .error-message {
+            color: #f44336;
+        }
+
+        .success-message {
+            color: #4CAF50;
+        }
+
+        /* QR Code Section */
+        #qr-section {
+            max-width: 400px;
+            margin: 30px auto;
+            text-align: center;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #qr-section h3 {
+            color: #333;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        #qr-section img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 15px;
+            border-radius: 8px;
+        }
+
+        #qr-section button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #qr-section button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <div>
+        <nav>
+            <button onclick="window.location.href='/'">Home</button>
+        </nav>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <h1>Add Product</h1>
+        
+        {% if error_message %}
+            <div class="error-message">{{ error_message }}</div>
+        {% endif %}
+        
+        {% if success_message %}
+            <div class="success-message">{{ success_message }}</div>
+        {% endif %}
+
+        <!-- Form for Product Details -->
+        <form method="POST">
+            <label for="product_id">Product ID</label>
+            <input type="text" id="product_id" name="product_id" required>
+
+            <label for="product_name">Product Name</label>
+            <input type="text" id="product_name" name="product_name" required>
+
+            <label for="category">Category</label>
+            <input type="text" id="category" name="category" required>
+
+            <label for="quantity">Quantity</label>
+            <input type="number" id="quantity" name="quantity" required>
+
+            <label for="price">Price</label>
+            <input type="number" id="price" name="price" step="0.01" required>
+
+            <input type="submit" value="Add Product">
+        </form>
+
+        <!-- QR Code Section -->
+       {% if barcode %}
+    <h3>Barcode for Product ID: {{ product_id }}</h3>
+    <img src="{{ url_for('static', filename=barcode_path.split('static/barcodes')[-1]) }}" alt="Barcode">
+{% endif %}
+
+    </div>
+
+    <script>
+        function printQRCode() {
+            var qrSection = document.getElementById('qr-section').innerHTML;
+            var newWindow = window.open('', '_blank', 'width=600,height=400');
+            newWindow.document.write('<html><head><title>Print QR Code</title></head><body>');
+            newWindow.document.write(qrSection);
+            newWindow.document.write('</body></html>');
+            newWindow.document.close();
+            newWindow.print();
+        }
+    </script>
+
+</body>
+</html>

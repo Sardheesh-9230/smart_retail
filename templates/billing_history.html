@@ -1,0 +1,327 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  h2 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 30px;
+  }
+  
+  .alert {
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+  }
+  
+  .alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+  }
+  
+  .table-container {
+    overflow-x: auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    background-color: #fff;
+    margin-bottom: 30px;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  th {
+    background-color: #3498db;
+    color: white;
+    font-weight: 600;
+    text-align: left;
+    padding: 12px 15px;
+  }
+  
+  td {
+    padding: 10px 15px;
+    border-bottom: 1px solid #e9ecef;
+  }
+  
+  tr:last-child td {
+    border-bottom: none;
+  }
+  
+  tr:hover {
+    background-color: #f8f9fa;
+  }
+  
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+  
+  .filter-input {
+    flex: 1;
+    min-width: 200px;
+  }
+  
+  .filter-input input, .filter-input select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  
+  .filter-input label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #495057;
+  }
+  
+  .btn-container {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+  
+  .btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-primary {
+    background-color: #3498db;
+    color: white;
+  }
+  
+  .btn-primary:hover {
+    background-color: #2980b9;
+  }
+  
+  .btn-secondary {
+    background-color: #95a5a6;
+    color: white;
+  }
+  
+  .btn-secondary:hover {
+    background-color: #7f8c8d;
+  }
+  
+  .bill-details {
+    display: none;
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  @media (max-width: 768px) {
+    .filter-input {
+      min-width: 100%;
+    }
+  }
+</style>
+
+<div class="container">
+  <h2>Billing History</h2>
+  
+  {% if error_message %}
+    <div class="alert alert-danger">
+      {{ error_message }}
+    </div>
+  {% endif %}
+  
+  <div class="filters">
+    <div class="filter-input">
+      <label for="dateFilter">Date Range</label>
+      <input type="date" id="dateFrom" name="dateFrom">
+      <input type="date" id="dateTo" name="dateTo" style="margin-top: 5px;">
+    </div>
+    
+    <div class="filter-input">
+      <label for="customerFilter">Customer Name</label>
+      <input type="text" id="customerFilter" placeholder="Filter by customer name">
+    </div>
+    
+    <div class="filter-input">
+      <label for="billIdFilter">Bill ID</label>
+      <input type="text" id="billIdFilter" placeholder="Search by bill ID">
+    </div>
+  </div>
+  
+  <div class="btn-container">
+    <button class="btn btn-primary" onclick="applyFilters()">Apply Filters</button>
+    <button class="btn btn-secondary" onclick="resetFilters()">Reset</button>
+    <button class="btn btn-primary" onclick="exportData()">Export to CSV</button>
+  </div>
+  
+  <div class="table-container">
+    {{ tables|safe }}
+  </div>
+  
+  <div id="billDetails" class="bill-details">
+    <h3>Bill Details</h3>
+    <div id="billDetailsContent"></div>
+  </div>
+</div>
+
+<script>
+  // Set today's date as the default for dateTo
+  document.getElementById('dateTo').valueAsDate = new Date();
+  
+  // Set date 30 days ago as the default for dateFrom
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  document.getElementById('dateFrom').valueAsDate = thirtyDaysAgo;
+  
+  function applyFilters() {
+    const dateFrom = document.getElementById('dateFrom').value;
+    const dateTo = document.getElementById('dateTo').value;
+    const customerName = document.getElementById('customerFilter').value.toLowerCase();
+    const billId = document.getElementById('billIdFilter').value.toLowerCase();
+    
+    const tableRows = document.querySelectorAll('table tbody tr');
+    
+    tableRows.forEach(row => {
+      const timestamp = row.querySelector('td:nth-child(2)').textContent;
+      const date = new Date(timestamp);
+      const rowDate = date.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+      
+      const rowCustomer = row.querySelector('td:nth-child(6)').textContent.toLowerCase();
+      const rowBillId = row.querySelector('td:nth-child(1)').textContent.toLowerCase();
+      
+      const matchesDate = (!dateFrom || rowDate >= dateFrom) && (!dateTo || rowDate <= dateTo);
+      const matchesCustomer = !customerName || rowCustomer.includes(customerName);
+      const matchesBillId = !billId || rowBillId.includes(billId);
+      
+      if (matchesDate && matchesCustomer && matchesBillId) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  }
+  
+  function resetFilters() {
+    // Reset date filters to defaults
+    document.getElementById('dateTo').valueAsDate = new Date();
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    document.getElementById('dateFrom').valueAsDate = thirtyDaysAgo;
+    
+    // Clear other filters
+    document.getElementById('customerFilter').value = '';
+    document.getElementById('billIdFilter').value = '';
+    
+    // Show all rows
+    const tableRows = document.querySelectorAll('table tbody tr');
+    tableRows.forEach(row => {
+      row.style.display = '';
+    });
+  }
+  
+  function exportData() {
+    const table = document.querySelector('table');
+    if (!table) {
+      alert('No data to export');
+      return;
+    }
+    
+    let csv = [];
+    const rows = table.querySelectorAll('tr');
+    
+    rows.forEach(row => {
+      if (row.style.display !== 'none') { // Only export visible rows
+        const rowData = [];
+        const cols = row.querySelectorAll('td, th');
+        
+        cols.forEach(col => {
+          // Remove HTML entities and quotes from the data
+          let data = col.textContent.replace(/(\r\n|\n|\r)/gm, '').replace(/"/g, '""');
+          rowData.push('"' + data + '"');
+        });
+        
+        csv.push(rowData.join(','));
+      }
+    });
+    
+    const csvContent = csv.join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'billing_history.csv');
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+  
+  // Add click event to table rows to show bill details
+  document.addEventListener('DOMContentLoaded', function() {
+    const tableRows = document.querySelectorAll('table tbody tr');
+    
+    tableRows.forEach(row => {
+      row.addEventListener('click', function() {
+        const billId = this.querySelector('td:nth-child(1)').textContent;
+        const timestamp = this.querySelector('td:nth-child(2)').textContent;
+        const total = this.querySelector('td:nth-child(5)').textContent;
+        const customer = this.querySelector('td:nth-child(6)').textContent;
+        const phone = this.querySelector('td:nth-child(7)').textContent;
+        const email = this.querySelector('td:nth-child(8)').textContent;
+        const items = this.querySelector('td:nth-child(9)').textContent;
+        const quantity = this.querySelector('td:nth-child(10)').textContent;
+        
+        const detailsHTML = `
+          <div style="display: flex; justify-content: space-between;">
+            <div>
+              <p><strong>Bill ID:</strong> ${billId}</p>
+              <p><strong>Date:</strong> ${timestamp}</p>
+              <p><strong>Total Items:</strong> ${items}</p>
+              <p><strong>Total Quantity:</strong> ${quantity}</p>
+            </div>
+            <div>
+              <p><strong>Customer:</strong> ${customer}</p>
+              <p><strong>Phone:</strong> ${phone}</p>
+              <p><strong>Email:</strong> ${email || 'N/A'}</p>
+              <p><strong>Total Amount:</strong> ${total}</p>
+            </div>
+          </div>
+          <div style="text-align: center; margin-top: 20px;">
+            <button class="btn btn-primary" onclick="viewFullBill('${billId}')">View Full Bill</button>
+          </div>
+        `;
+        
+        document.getElementById('billDetailsContent').innerHTML = detailsHTML;
+        document.getElementById('billDetails').style.display = 'block';
+      });
+    });
+  });
+  
+  function viewFullBill(billId) {
+    // You can implement this function to fetch and display the full bill details
+    // This could open a modal or navigate to a detailed bill view page
+    alert(`View full details for bill: ${billId} (This feature can be implemented as needed)`);
+  }
+</script>
+{% endblock %}

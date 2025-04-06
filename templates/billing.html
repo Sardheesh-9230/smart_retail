@@ -1,0 +1,1249 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <style>
+    .billing-container {
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+    
+    .billing-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding: 15px 20px;
+      border-radius: 10px;
+      background: linear-gradient(to right, #3498db, #2c3e50);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+      color: white;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .billing-header h2 {
+      color: white;
+      margin: 0;
+      font-size: 24px;
+      position: relative;
+      z-index: 2;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+    }
+    
+    .header-content {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      z-index: 2;
+    }
+    
+    .store-info {
+      display: flex;
+      align-items: center;
+      margin-top: 5px;
+      font-size: 14px;
+    }
+    
+    .store-info i {
+      margin-right: 8px;
+      font-size: 16px;
+    }
+    
+    .header-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      z-index: 2;
+    }
+    
+    .billing-date {
+      font-size: 16px;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    
+    .billing-time {
+      font-size: 20px;
+      font-weight: 700;
+    }
+    
+    .header-controls {
+      position: absolute;
+      bottom: -40px;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      padding: 5px 0;
+      background: rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+      z-index: 1;
+    }
+    
+    .header-button {
+      background: none;
+      border: none;
+      color: white;
+      margin: 0 10px;
+      padding: 5px 15px;
+      font-size: 12px;
+      cursor: pointer;
+      border-radius: 15px;
+      transition: all 0.3s ease;
+      width: auto;
+    }
+    
+    .header-button:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: none;
+      box-shadow: none;
+    }
+    
+    .billing-header:hover .header-controls {
+      bottom: 0;
+    }
+    
+    .theme-selector {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 3;
+      display: flex;
+      gap: 5px;
+    }
+    
+    .theme-option {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      transition: all 0.3s ease;
+    }
+    
+    .theme-option:hover {
+      transform: scale(1.2);
+    }
+    
+    .theme-option.blue {
+      background: linear-gradient(to right, #3498db, #2c3e50);
+    }
+    
+    .theme-option.green {
+      background: linear-gradient(to right, #2ecc71, #27ae60);
+    }
+    
+    .theme-option.purple {
+      background: linear-gradient(to right, #9b59b6, #8e44ad);
+    }
+    
+    .theme-option.orange {
+      background: linear-gradient(to right, #e67e22, #d35400);
+    }
+    
+    /* Header Animation */
+    @keyframes pulse {
+      0% { box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); }
+      50% { box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25); }
+      100% { box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); }
+    }
+    
+    .pulse-animation {
+      animation: pulse 2s infinite;
+    }
+    
+    .cart-count-badge {
+      background-color: #e74c3c;
+      color: white;
+      border-radius: 50%;
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: bold;
+      position: absolute;
+      top: -5px;
+      right: -5px;
+    }
+    
+    .header-icon {
+      position: relative;
+      margin-left: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .header-icon:hover {
+      transform: scale(1.2);
+    }
+    
+    .billing-sections {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    
+    .scan-section, .cart-section {
+      width: 48%;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    }
+    
+    @media (max-width: 768px) {
+      .billing-sections {
+        flex-direction: column;
+      }
+      
+      .scan-section, .cart-section {
+        width: 100%;
+        margin-bottom: 20px;
+      }
+    }
+    
+    h2 {
+      text-align: center;
+      color: #2c3e50;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+    
+    h3 {
+      text-align: center;
+      color: #3498db;
+      font-weight: 600;
+      border-bottom: 2px solid #f8f9fa;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+    }
+    
+    input, select {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+    
+    input:focus, select:focus {
+      border-color: #3498db;
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+      outline: none;
+    }
+    
+    .input-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    
+    .input-group input {
+      flex: 1;
+    }
+    
+    button {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 8px;
+      background-color: #3498db;
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    button:hover {
+      background-color: #2980b9;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      transform: translateY(-2px);
+    }
+    
+    button.btn-secondary {
+      background-color: #95a5a6;
+    }
+    
+    button.btn-secondary:hover {
+      background-color: #7f8c8d;
+    }
+    
+    button.btn-success {
+      background-color: #2ecc71;
+    }
+    
+    button.btn-success:hover {
+      background-color: #27ae60;
+    }
+    
+    button.btn-danger {
+      background-color: #e74c3c;
+    }
+    
+    button.btn-danger:hover {
+      background-color: #c0392b;
+    }
+    
+    .cart-list {
+      max-height: 300px;
+      overflow-y: auto;
+      margin-bottom: 20px;
+    }
+    
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    
+    .cart-item {
+      background: #f8f9fa;
+      margin: 8px 0;
+      padding: 15px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      transition: all 0.2s ease;
+    }
+    
+    .cart-item:hover {
+      background: #e9ecef;
+      transform: translateX(3px);
+    }
+    
+    .item-details {
+      flex: 1;
+    }
+    
+    .item-name {
+      font-weight: bold;
+    }
+    
+    .item-price, .item-quantity, .item-total {
+      color: #7f8c8d;
+      font-size: 14px;
+    }
+    
+    .remove-btn {
+      background: #e74c3c;
+      color: white;
+      border: none;
+      width: auto;
+      padding: 5px 10px;
+      margin: 0 0 0 10px;
+      cursor: pointer;
+      border-radius: 5px;
+      font-size: 12px;
+    }
+    
+    .remove-btn:hover {
+      background: #c0392b;
+    }
+    
+    .summary {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 10px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+    
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+    
+    .summary-total {
+      font-weight: bold;
+      font-size: 18px;
+      color: #2c3e50;
+      border-top: 1px solid #e9ecef;
+      padding-top: 10px;
+    }
+    
+    .summary-label {
+      color: #7f8c8d;
+    }
+    
+    .summary-value {
+      font-weight: 600;
+    }
+    
+    .customer-info {
+      margin-top: 20px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    }
+    
+    .barcode-scanner {
+      display: flex;
+      justify-content: center;
+      margin: 20px 0;
+    }
+    
+    .product-not-found {
+      padding: 10px;
+      background-color: #ffcccc;
+      border-radius: 5px;
+      margin: 10px 0;
+      display: none;
+    }
+    
+    .success-alert {
+      padding: 10px;
+      background-color: #d4edda;
+      color: #155724;
+      border-radius: 5px;
+      margin: 10px 0;
+      display: none;
+    }
+    
+    /* Animation for adding items */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    
+    /* Fix for manual mode display */
+    #manualMode.show {
+      display: flex !important;
+    }
+    
+    /* Print styles */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      .print-area, .print-area * {
+        visibility: visible;
+      }
+      .print-area {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+      }
+      .no-print {
+        display: none;
+      }
+    }
+  </style>
+
+  <div class="billing-container">
+    <div class="billing-header" id="billingHeader">
+      <div class="theme-selector">
+        <div class="theme-option blue" onclick="changeHeaderTheme('blue')"></div>
+        <div class="theme-option green" onclick="changeHeaderTheme('green')"></div>
+        <div class="theme-option purple" onclick="changeHeaderTheme('purple')"></div>
+        <div class="theme-option orange" onclick="changeHeaderTheme('orange')"></div>
+      </div>
+      
+      <div class="header-content">
+        <h2 id="storeTitle">Smart Retail Billing</h2>
+        <div class="store-info">
+          <i>📍</i> <span id="storeLocation">Main Store</span>
+        </div>
+      </div>
+      
+      <div class="header-right">
+        <div class="billing-date">
+          <span id="current-date"></span>
+        </div>
+        <div class="billing-time" id="current-time"></div>
+        <div style="display: flex; margin-top: 5px;">
+          <div class="header-icon" onclick="toggleCartView()">
+            🛒
+            <div class="cart-count-badge" id="cartCountBadge">0</div>
+          </div>
+          <div class="header-icon" onclick="showBillingHistory()">📋</div>
+          <div class="header-icon" onclick="toggleFullscreen()">⛶</div>
+        </div>
+      </div>
+      
+      <div class="header-controls">
+        <button class="header-button" onclick="showKeyboardShortcuts()">⌨️ Shortcuts</button>
+        <button class="header-button" onclick="toggleHeaderAnimation()">🔄 Animation</button>
+        <button class="header-button" onclick="editStoreInfo()">✏️ Edit Info</button>
+      </div>
+    </div>
+    
+    <div class="billing-sections">
+      <div class="scan-section">
+        <h3>Product Entry</h3>
+        
+        <div id="errorMessage" class="product-not-found"></div>
+        <div id="successMessage" class="success-alert"></div>
+        
+        <div class="input-tabs" style="display: flex; margin-bottom: 15px;">
+          <button id="scanTab" class="tab-btn active" style="flex: 1; padding: 8px; border-radius: 8px 0 0 8px;">Barcode Scan</button>
+          <button id="manualTab" class="tab-btn" style="flex: 1; padding: 8px; border-radius: 0 8px 8px 0;">Manual Entry</button>
+        </div>
+        
+        <div id="scanMode" class="input-group">
+          <input type="text" id="barcodeInput" placeholder="Scan product barcode" autofocus>
+          <button onclick="searchByBarcode()" class="btn-secondary">Search</button>
+        </div>
+        
+        <div id="manualMode" class="input-group" style="display: none;">
+          <input type="text" id="productIdInput" placeholder="Enter product ID">
+          <button onclick="searchByProductId()" class="btn-secondary">Search</button>
+        </div>
+        
+        <div id="productDetails" style="display: none; margin: 15px 0; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+          <div class="item-name" id="productName"></div>
+          <div class="item-id" id="productID" style="font-size: 14px; color: #6c757d; margin: 5px 0;"></div>
+          <div class="item-price" id="productPrice"></div>
+          <div class="item-quantity" id="productStock"></div>
+        </div>
+        
+        <div class="input-group">
+          <input type="number" id="quantityInput" placeholder="Quantity" value="1" min="1">
+          <button onclick="addProduct()" id="addBtn">Add to Cart</button>
+        </div>
+      </div>
+      
+      <div class="cart-section">
+        <h3>Shopping Cart</h3>
+        <div class="cart-list">
+          <ul id="cartItems"></ul>
+        </div>
+        
+        <div class="summary">
+          <div class="summary-row">
+            <span class="summary-label">Subtotal:</span>
+            <span class="summary-value" id="subtotalAmount">₹0.00</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Tax (18%):</span>
+            <span class="summary-value" id="taxAmount">₹0.00</span>
+          </div>
+          <div class="summary-total">
+            <span class="summary-label">Total:</span>
+            <span class="summary-value" id="totalAmount">₹0.00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div style="display: flex; gap: 10px; margin-top: 15px; justify-content: center;">
+      <button onclick="generateBill()" class="btn-success">Generate Bill</button>
+      <button onclick="clearCart()" class="btn-secondary">Clear Cart</button>
+    </div>
+  </div>
+  
+  <div id="billPrintArea" class="print-area" style="display: none;">
+    <!-- Print content will be generated here dynamically -->
+  </div>
+
+  <script>
+    let cart = [];
+    let subtotal = 0;
+    let tax = 0;
+    let total = 0;
+    let currentProduct = null;
+    let headerAnimationActive = false;
+    let currentTheme = 'blue';
+    let storeInfo = {
+      name: 'Smart Retail Billing',
+      location: 'Main Store'
+    };
+
+    // Display current date
+    document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', { 
+      weekday: 'long', 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
+
+    // Set up tab switching
+    document.getElementById('scanTab').addEventListener('click', function() {
+      document.getElementById('scanMode').style.display = 'flex';
+      document.getElementById('manualMode').style.display = 'none';
+      this.classList.add('active');
+      document.getElementById('manualTab').classList.remove('active');
+      document.getElementById('barcodeInput').focus();
+      
+      // Update button styles
+      document.getElementById('scanTab').style.backgroundColor = '#3498db';
+      document.getElementById('scanTab').style.color = 'white';
+      document.getElementById('manualTab').style.backgroundColor = '#f8f9fa';
+      document.getElementById('manualTab').style.color = '#6c757d';
+    });
+    
+    document.getElementById('manualTab').addEventListener('click', function() {
+      document.getElementById('scanMode').style.display = 'none';
+      document.getElementById('manualMode').style.display = 'flex !important'; // Force display
+      document.getElementById('manualMode').setAttribute('style', 'display: flex !important'); // Alternative way to force display
+      this.classList.add('active');
+      document.getElementById('scanTab').classList.remove('active');
+      document.getElementById('productIdInput').focus();
+      
+      // Update button styles
+      document.getElementById('manualTab').style.backgroundColor = '#3498db';
+      document.getElementById('manualTab').style.color = 'white';
+      document.getElementById('scanTab').style.backgroundColor = '#f8f9fa';
+      document.getElementById('scanTab').style.color = '#6c757d';
+    });
+
+    // Style for tab buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.style.backgroundColor = btn.classList.contains('active') ? '#3498db' : '#f8f9fa';
+      btn.style.color = btn.classList.contains('active') ? 'white' : '#6c757d';
+      btn.style.border = '1px solid #ddd';
+      btn.style.transition = 'all 0.3s ease';
+      
+      btn.addEventListener('mouseenter', function() {
+        if (!this.classList.contains('active')) {
+          this.style.backgroundColor = '#e9ecef';
+        }
+      });
+      
+      btn.addEventListener('mouseleave', function() {
+        if (!this.classList.contains('active')) {
+          this.style.backgroundColor = '#f8f9fa';
+        }
+      });
+      
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.tab-btn').forEach(b => {
+          b.style.backgroundColor = b.classList.contains('active') ? '#3498db' : '#f8f9fa';
+          b.style.color = b.classList.contains('active') ? 'white' : '#6c757d';
+        });
+      });
+    });
+
+    // Search by barcode (scanner)
+    function searchByBarcode() {
+      const barcode = document.getElementById('barcodeInput').value.trim();
+      if (!barcode) {
+        showError("Please scan a barcode");
+        return;
+      }
+      searchProductDetails(barcode);
+    }
+    
+    // Search by product ID (manual entry)
+    function searchByProductId() {
+      const productId = document.getElementById('productIdInput').value.trim();
+      if (!productId) {
+        showError("Please enter a product ID");
+        return;
+      }
+      searchProductDetails(productId);
+    }
+    
+    // Common function to fetch product details
+    function searchProductDetails(identifier) {
+      document.getElementById('productDetails').style.display = 'none';
+      document.getElementById('errorMessage').style.display = 'none';
+      
+      fetch(`/get_product_details?barcode=${identifier}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (data && data.success !== false) {
+            currentProduct = data;
+            document.getElementById('productName').textContent = data['Product Name'];
+            document.getElementById('productID').textContent = `ID: ${data['Product ID']}`;
+            document.getElementById('productPrice').textContent = `Price: ₹${data['Price'].toFixed(2)}`;
+            document.getElementById('productStock').textContent = `Available Stock: ${data['Quantity']}`;
+            document.getElementById('productDetails').style.display = 'block';
+            
+            // Auto-focus quantity
+            document.getElementById('quantityInput').focus();
+          } else {
+            showError(data.message || `Product with ID "${identifier}" not found!`);
+            currentProduct = null;
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching product details:', error);
+          showError('Error fetching product details. Please try again.');
+        });
+    }
+    
+    // For backward compatibility
+    function searchProduct() {
+      searchByBarcode();
+    }
+
+    // Show error message
+    function showError(message) {
+      const errorElement = document.getElementById('errorMessage');
+      errorElement.textContent = message;
+      errorElement.style.display = 'block';
+      
+      // Hide after 4 seconds
+      setTimeout(() => {
+        errorElement.style.display = 'none';
+      }, 4000);
+    }
+
+    // Show success message
+    function showSuccess(message) {
+      const successElement = document.getElementById('successMessage');
+      successElement.textContent = message;
+      successElement.style.display = 'block';
+      
+      // Hide after 3 seconds
+      setTimeout(() => {
+        successElement.style.display = 'none';
+      }, 3000);
+    }
+
+    // Add product to cart
+    function addProduct() {
+      if (!currentProduct) {
+        showError("Please scan or search for a product first");
+        return;
+      }
+      
+      const quantity = parseInt(document.getElementById('quantityInput').value, 10) || 1;
+      
+      if (quantity <= 0) {
+        showError("Please enter a valid quantity");
+        return;
+      }
+      
+      if (quantity > currentProduct['Quantity']) {
+        showError(`Insufficient stock! Only ${currentProduct['Quantity']} available.`);
+        return;
+      }
+      
+      // Check if product is already in cart
+      const existingProductIndex = cart.findIndex(item => item['Product ID'] === currentProduct['Product ID']);
+      
+      if (existingProductIndex !== -1) {
+        const newQuantity = cart[existingProductIndex].quantity + quantity;
+        if (newQuantity > currentProduct['Quantity']) {
+          showError(`Cannot add more units. Total would exceed available stock.`);
+          return;
+        }
+        cart[existingProductIndex].quantity = newQuantity;
+      } else {
+        // Add new product to cart
+        currentProduct.quantity = quantity;
+        cart.push(currentProduct);
+      }
+      
+      // Update display
+      updateCartDisplay();
+      showSuccess(`${quantity} x ${currentProduct['Product Name']} added to cart`);
+      
+      // Reset inputs
+      document.getElementById('barcodeInput').value = '';
+      document.getElementById('productIdInput').value = '';
+      document.getElementById('quantityInput').value = '1';
+      document.getElementById('productDetails').style.display = 'none';
+      currentProduct = null;
+      
+      // Focus back to appropriate input based on active tab
+      if (document.getElementById('scanTab').classList.contains('active')) {
+        document.getElementById('barcodeInput').focus();
+      } else {
+        document.getElementById('productIdInput').focus();
+      }
+    }
+
+    // Remove product from cart
+    function removeProduct(index) {
+      cart.splice(index, 1);
+      updateCartDisplay();
+    }
+
+    // Update cart display
+    function updateCartDisplay() {
+      const cartItemsList = document.getElementById('cartItems');
+      cartItemsList.innerHTML = '';
+      subtotal = 0;
+
+      if (cart.length === 0) {
+        cartItemsList.innerHTML = '<li style="text-align: center; background: none;">Cart is empty</li>';
+      } else {
+        cart.forEach((product, index) => {
+          const itemTotal = parseFloat(product.Price * product.quantity);
+          subtotal += itemTotal;
+
+          const listItem = document.createElement('li');
+          listItem.className = 'cart-item fade-in';
+          listItem.innerHTML = `
+            <div class="item-details">
+              <div class="item-name">${product['Product Name']}</div>
+              <div class="item-price">₹${product.Price.toFixed(2)} x ${product.quantity}</div>
+              <div class="item-total">Total: ₹${itemTotal.toFixed(2)}</div>
+            </div>
+            <button class="remove-btn" onclick="removeProduct(${index})">✕</button>
+          `;
+          cartItemsList.appendChild(listItem);
+        });
+      }
+
+      // Calculate tax and total
+      tax = subtotal * 0.18; // 18% tax
+      total = subtotal + tax;
+
+      // Update summary values
+      document.getElementById('subtotalAmount').textContent = `₹${subtotal.toFixed(2)}`;
+      document.getElementById('taxAmount').textContent = `₹${tax.toFixed(2)}`;
+      document.getElementById('totalAmount').textContent = `₹${total.toFixed(2)}`;
+      
+      // Update the cart count badge in header
+      updateCartCountBadge();
+    }
+
+    // Clear the cart
+    function clearCart() {
+      if (cart.length > 0) {
+        if (confirm('Are you sure you want to clear the cart?')) {
+          cart = [];
+          updateCartDisplay();
+          showSuccess('Cart cleared');
+        }
+      }
+    }
+
+    // Listen for barcode input scan events
+    document.getElementById('barcodeInput').addEventListener('keydown', function(event) {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        searchByBarcode();
+      }
+    });
+    
+    // Listen for product ID input events
+    document.getElementById('productIdInput').addEventListener('keydown', function(event) {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        searchByProductId();
+      }
+    });
+
+    // Generate bill
+    function generateBill() {
+      if (cart.length === 0) {
+        showError("Cart is empty. Please add products to generate a bill.");
+        return;
+      }
+
+      // Create billing data without customer information
+      const billingData = {
+        cart: cart,
+        summary: {
+          subtotal: subtotal,
+          tax: tax,
+          total: total
+        },
+        timestamp: new Date().toISOString()
+      };
+
+      fetch('/generate_bill', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(billingData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          // Create printable bill
+          const billHTML = createPrintableBill(data.bill_id, billingData);
+          document.getElementById('billPrintArea').innerHTML = billHTML;
+          
+          // Show success message
+          showSuccess(`Bill #${data.bill_id} generated successfully!`);
+          
+          // Print the bill
+          setTimeout(() => {
+            window.print();
+            
+            // Clear cart after printing
+            cart = [];
+            updateCartDisplay();
+          }, 500);
+        } else {
+          showError('Error generating bill: ' + data.message);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        showError('Failed to generate bill. Please try again.');
+      });
+    }
+
+    // Create printable bill HTML
+    function createPrintableBill(billId, data) {
+      const date = new Date(data.timestamp);
+      const formattedDate = date.toLocaleDateString();
+      const formattedTime = date.toLocaleTimeString();
+
+      let itemsHTML = '';
+      data.cart.forEach(item => {
+        const itemTotal = item.Price * item.quantity;
+        itemsHTML += `
+          <tr>
+            <td>${item['Product Name']}</td>
+            <td>${item['Product ID']}</td>
+            <td>₹${item.Price.toFixed(2)}</td>
+            <td>${item.quantity}</td>
+            <td>₹${itemTotal.toFixed(2)}</td>
+          </tr>
+        `;
+      });
+
+      return `
+        <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px;">
+          <div style="text-align: center; margin-bottom: 20px;">
+            <h2 style="margin: 0;">Smart Retail Store</h2>
+            <p style="margin: 5px 0;">123 Main Street, City, Country</p>
+            <p style="margin: 5px 0;">Phone: (123) 456-7890</p>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+            <div>
+              <p><strong>Bill #:</strong> ${billId}</p>
+              <p><strong>Date:</strong> ${formattedDate}</p>
+              <p><strong>Time:</strong> ${formattedTime}</p>
+            </div>
+            <div>
+              <p><strong>Customer:</strong> ${data.customer.name}</p>
+              <p><strong>Phone:</strong> ${data.customer.phone}</p>
+              ${data.customer.email ? `<p><strong>Email:</strong> ${data.customer.email}</p>` : ''}
+            </div>
+          </div>
+
+          <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+            <thead>
+              <tr style="background-color: #f2f2f2;">
+                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Item</th>
+                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Product ID</th>
+                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Price</th>
+                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Qty</th>
+                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${itemsHTML}
+            </tbody>
+          </table>
+
+          <div style="margin-left: auto; width: 300px;">
+            <div style="display: flex; justify-content: space-between; padding: 5px 0;">
+              <span>Subtotal:</span>
+              <span>₹${data.summary.subtotal.toFixed(2)}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 5px 0;">
+              <span>Tax (18%):</span>
+              <span>₹${data.summary.tax.toFixed(2)}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 10px 0; border-top: 1px solid #ddd; font-weight: bold;">
+              <span>Total:</span>
+              <span>₹${data.summary.total.toFixed(2)}</span>
+            </div>
+          </div>
+
+          <div style="margin-top: 40px; text-align: center;">
+            <p>Thank you for shopping with us!</p>
+            <p style="color: #777;">This is a computer-generated bill and does not require a signature.</p>
+          </div>
+        </div>
+      `;
+    }
+
+    // Initialize the cart display
+    updateCartDisplay();
+
+    // Add keyboard shortcuts
+    document.addEventListener('keydown', function(event) {
+      // Alt + B to focus on barcode input
+      if (event.altKey && event.key === 'b') {
+        event.preventDefault();
+        document.getElementById('barcodeInput').focus();
+      }
+      
+      // Alt + Q to focus on quantity input
+      if (event.altKey && event.key === 'q') {
+        event.preventDefault();
+        document.getElementById('quantityInput').focus();
+      }
+      
+      // Alt + A to add current product to cart
+      if (event.altKey && event.key === 'a') {
+        event.preventDefault();
+        if (currentProduct) {
+          addProduct();
+        }
+      }
+      
+      // Alt + G to generate bill
+      if (event.altKey && event.key === 'g') {
+        event.preventDefault();
+        generateBill();
+      }
+    });
+
+    // Make sure this code runs when the page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize tab buttons and set up event listeners
+      document.getElementById('scanTab').addEventListener('click', function() {
+        document.getElementById('scanMode').style.display = 'flex';
+        document.getElementById('manualMode').style.display = 'none';
+        document.getElementById('manualMode').classList.remove('show');
+        this.classList.add('active');
+        document.getElementById('manualTab').classList.remove('active');
+        document.getElementById('barcodeInput').focus();
+      });
+      
+      document.getElementById('manualTab').addEventListener('click', function() {
+        document.getElementById('scanMode').style.display = 'none';
+        document.getElementById('manualMode').classList.add('show');
+        this.classList.add('active');
+        document.getElementById('scanTab').classList.remove('active');
+        document.getElementById('productIdInput').focus();
+      });
+      
+      // Set up color styles for tab buttons
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.style.backgroundColor = btn.classList.contains('active') ? '#3498db' : '#f8f9fa';
+        btn.style.color = btn.classList.contains('active') ? 'white' : '#6c757d';
+      });
+      
+      // Start clock
+      updateTime();
+      setInterval(updateTime, 1000);
+      
+      // Initialize cart badge
+      updateCartCountBadge();
+    });
+
+    // Update time every second
+    function updateTime() {
+      const now = new Date();
+      document.getElementById('current-time').textContent = now.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+    }
+    
+    // Update cart count badge
+    function updateCartCountBadge() {
+      const badge = document.getElementById('cartCountBadge');
+      badge.textContent = cart.length;
+      
+      // Add a small animation effect when count changes
+      badge.classList.add('fade-in');
+      setTimeout(() => badge.classList.remove('fade-in'), 500);
+      
+      // Hide badge when cart is empty
+      if (cart.length === 0) {
+        badge.style.display = 'none';
+      } else {
+        badge.style.display = 'flex';
+      }
+    }
+    
+    // Toggle header animation effect
+    function toggleHeaderAnimation() {
+      const header = document.getElementById('billingHeader');
+      headerAnimationActive = !headerAnimationActive;
+      
+      if (headerAnimationActive) {
+        header.classList.add('pulse-animation');
+      } else {
+        header.classList.remove('pulse-animation');
+      }
+    }
+    
+    // Change header theme
+    function changeHeaderTheme(theme) {
+      const header = document.getElementById('billingHeader');
+      currentTheme = theme;
+      
+      // Remove existing background
+      header.style.background = '';
+      
+      // Apply new theme
+      switch(theme) {
+        case 'blue':
+          header.style.background = 'linear-gradient(to right, #3498db, #2c3e50)';
+          break;
+        case 'green':
+          header.style.background = 'linear-gradient(to right, #2ecc71, #27ae60)';
+          break;
+        case 'purple':
+          header.style.background = 'linear-gradient(to right, #9b59b6, #8e44ad)';
+          break;
+        case 'orange':
+          header.style.background = 'linear-gradient(to right, #e67e22, #d35400)';
+          break;
+      }
+    }
+    
+    // Show keyboard shortcuts modal
+    function showKeyboardShortcuts() {
+      const shortcutsHTML = `
+        <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); max-width: 400px; margin: 0 auto;">
+          <h3 style="text-align: center; margin-top: 0;">Keyboard Shortcuts</h3>
+          <ul style="list-style-type: none; padding: 0;">
+            <li style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Alt + B</strong>: Focus on barcode input</li>
+            <li style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Alt + Q</strong>: Focus on quantity input</li>
+            <li style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Alt + A</strong>: Add product to cart</li>
+            <li style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Alt + G</strong>: Generate bill</li>
+            <li style="padding: 8px 0;"><strong>Esc</strong>: Close this dialog</li>
+          </ul>
+          <button onclick="closeModal()" style="width: 100%; padding: 10px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 15px;">Close</button>
+        </div>
+      `;
+      
+      showModal(shortcutsHTML);
+    }
+    
+    // Edit store information
+    function editStoreInfo() {
+      const editFormHTML = `
+        <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); max-width: 400px; margin: 0 auto;">
+          <h3 style="text-align: center; margin-top: 0;">Edit Store Information</h3>
+          <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 5px; font-weight: 500;">Store Name:</label>
+            <input type="text" id="editStoreName" value="${storeInfo.name}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
+          </div>
+          <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 5px; font-weight: 500;">Location:</label>
+            <input type="text" id="editStoreLocation" value="${storeInfo.location}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <button onclick="saveStoreInfo()" style="flex: 1; padding: 10px; background: #2ecc71; color: white; border: none; border-radius: 5px; cursor: pointer;">Save</button>
+            <button onclick="closeModal()" style="flex: 1; padding: 10px; background: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer;">Cancel</button>
+          </div>
+        </div>
+      `;
+      
+      showModal(editFormHTML);
+    }
+    
+    // Save store info
+    function saveStoreInfo() {
+      const newName = document.getElementById('editStoreName').value.trim();
+      const newLocation = document.getElementById('editStoreLocation').value.trim();
+      
+      if (newName && newLocation) {
+        storeInfo.name = newName;
+        storeInfo.location = newLocation;
+        
+        // Update displayed info
+        document.getElementById('storeTitle').textContent = storeInfo.name;
+        document.getElementById('storeLocation').textContent = storeInfo.location;
+        
+        closeModal();
+        showSuccess('Store information updated');
+      } else {
+        alert('Please fill in all fields');
+      }
+    }
+    
+    // Show modal with custom content
+    function showModal(htmlContent) {
+      // Create modal container if it doesn't exist
+      let modalContainer = document.getElementById('modalContainer');
+      if (!modalContainer) {
+        modalContainer = document.createElement('div');
+        modalContainer.id = 'modalContainer';
+        modalContainer.style.position = 'fixed';
+        modalContainer.style.top = '0';
+        modalContainer.style.left = '0';
+        modalContainer.style.width = '100%';
+        modalContainer.style.height = '100%';
+        modalContainer.style.backgroundColor = 'rgba(0,0,0,0.5)';
+        modalContainer.style.display = 'flex';
+        modalContainer.style.alignItems = 'center';
+        modalContainer.style.justifyContent = 'center';
+        modalContainer.style.zIndex = '1000';
+        document.body.appendChild(modalContainer);
+        
+        // Close on click outside
+        modalContainer.addEventListener('click', function(e) {
+          if (e.target === modalContainer) {
+            closeModal();
+          }
+        });
+        
+        // Close on Escape key
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape') {
+            closeModal();
+          }
+        });
+      }
+      
+      modalContainer.innerHTML = htmlContent;
+      modalContainer.style.display = 'flex';
+    }
+    
+    // Close modal
+    function closeModal() {
+      const modalContainer = document.getElementById('modalContainer');
+      if (modalContainer) {
+        modalContainer.style.display = 'none';
+      }
+    }
+    
+    // Toggle fullscreen mode
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+          alert(`Error attempting to enable fullscreen: ${err.message}`);
+        });
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+    
+    // Show billing history
+    function showBillingHistory() {
+      window.location.href = '/billing_history';
+    }
+    
+    // Toggle cart view (expand/collapse)
+    function toggleCartView() {
+      const cartSection = document.querySelector('.cart-section');
+      cartSection.style.transition = 'all 0.3s ease';
+      
+      if (cartSection.style.maxHeight) {
+        cartSection.style.maxHeight = null;
+        cartSection.style.overflow = 'visible';
+      } else {
+        cartSection.style.maxHeight = '300px';
+        cartSection.style.overflow = 'auto';
+        cartSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  </script>
+{% endblock %}

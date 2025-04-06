@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Current Inventory</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #2c3e50;
+        }
+
+        /* Header Section */
+        header {
+            background-color: #34495e;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            font-size: 1.5rem;
+        }
+
+        /* Container for content */
+        .container {
+            margin: 30px auto;
+            padding: 20px;
+            width: 90%;
+            max-width: 1200px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Table Styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table th, table td {
+            text-align: center;
+            padding: 12px 15px;
+            border: 1px solid #ccc;
+        }
+
+        table th {
+            background-color: #1abc9c;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #ecf0f1;
+        }
+
+        table tr:hover {
+            background-color: #d1f2eb;
+            cursor: pointer;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            table {
+                font-size: 14px;
+            }
+
+            header {
+                font-size: 1.2rem;
+            }
+
+            .container {
+                padding: 15px;
+            }
+        }
+
+        /* Footer Section */
+        footer {
+            text-align: center;
+            padding: 10px 0;
+            background-color: #34495e;
+            color: white;
+            margin-top: 30px;
+            font-size: 0.9rem;
+        }
+        nav {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            color:green;
+           
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        Current Inventory
+        <nav>
+            <button onclick="window.location.href='/'">Home</button>
+        </nav>
+    </header>
+
+    <div class="container">
+        {% block content %}
+        <h2 style="text-align: left;">Inventory Details</h2>
+        <div>
+            
+            {{tables|safe}}
+        </div>
+        {%endblock %}
+    </div>
+
+    <footer>
+        &copy; 2024 Inventory Management System. All rights reserved.
+    </footer>
+
+</body>
+</html>

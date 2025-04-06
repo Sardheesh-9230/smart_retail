@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Sales Log</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        header {
+            background-color: #2c3e50;
+            padding: 15px 0;
+            text-align: center;
+        }
+        nav a {
+            color: #ecf0f1;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 0 15px;
+            transition: color 0.3s ease;
+        }
+        nav a:hover {
+            color: #1abc9c;
+            text-decoration: underline;
+        }
+        main {
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #34495e;
+            font-size: 2.5em;
+            margin-top: 20px;
+        }
+        h2 {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 1.5em;
+            margin-top: 10px;
+        }
+        .table-container {
+            max-width: 90%;
+            margin: 30px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #34495e;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #eafaf1;
+        }
+        footer {
+            text-align: center;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 10px 0;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/billing">Billing</a>
+        </nav>
+    </header>
+    <main>
+        <h1>Sales Log</h1>
+        <h2>All Recorded Sales</h2>
+        <div class="table-container">
+            {{tables|safe}}
+        </div>
+    </main>
+    <footer>
+        <p>&copy; {{ datetime.utcnow().year }} Inventory Management System</p>
+    </footer>
+</body>
+</html>

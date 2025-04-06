@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <title>Inventory Management</title>
+    <style>
+      :root {
+        --primary-color: #007bff;
+        --secondary-color: #6c757d;
+        --background-color: #fff;
+      }
+
+      body {
+        background-color: var(--background-color);
+        color: var(--primary-color);
+      }
+
+      .page-transition {
+        opacity: 1;
+        transform: translateX(0);
+        transition: opacity 0.5s ease, transform 0.5s ease;
+      }
+
+      .page-transition.loading {
+        opacity: 0;
+        transform: translateX(-100%);
+      }
+
+      nav {
+        background-color: var(--secondary-color); /* Example of using a variable */
+        padding: 1rem;
+      }
+        nav button{
+            margin-left:10px
+        }
+    </style>
+</head>
+<body>
+    <main class="page-transition">
+        {% block content %}{% endblock %}
+    </main>
+    <script>
+        window.addEventListener('beforeunload', () => {
+            document.querySelector('.page-transition').classList.add('loading');
+        });
+        window.addEventListener('DOMContentLoaded', () => {
+            document.querySelector('.page-transition').classList.remove('loading');
+        });
+
+        document.getElementById('theme-default').addEventListener('click', () => {
+          document.documentElement.style.setProperty('--primary-color', '#007bff');
+          document.documentElement.style.setProperty('--secondary-color', '#6c757d');
+          document.documentElement.style.setProperty('--background-color', '#fff');
+        });
+
+        document.getElementById('theme-dark').addEventListener('click', () => {
+          document.documentElement.style.setProperty('--primary-color', '#f8f9fa');
+          document.documentElement.style.setProperty('--secondary-color', '#343a40');
+          document.documentElement.style.setProperty('--background-color', '#212529');
+        });
+        document.getElementById('theme-light').addEventListener('click', () => {
+          document.documentElement.style.setProperty('--primary-color', '#212529');
+          document.documentElement.style.setProperty('--secondary-color', '#f8f9fa');
+          document.documentElement.style.setProperty('--background-color', '#fff');
+        });
+    </script>
+</body>
+</html>
